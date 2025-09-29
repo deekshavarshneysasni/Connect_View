@@ -1,0 +1,311 @@
+{
+  "data": [
+    {
+      "accountName": "2006-TEST-OFFICE",
+      "deviceInfoList": [
+        
+      ],
+      "displayName": "2006-TEST-OFFICE",
+      "extensionEmail": null,
+      "id": 5258160,
+      "mac": "—",
+      "modifyTime": "2025-08-11 13:33",
+      "orgId": "120715",
+      "orgName": null,
+      "serverName": "15.207.195.190:5070",
+      "sipServer": "15.207.195.190:5070",
+      "sipUserId": "38092006",
+      "source": 1,
+      "status": 0
+    },
+    {
+      "accountName": "2005-TEST-OFFICE",
+      "deviceInfoList": [
+        {
+          "account": 1,
+          "accountStatus": "Up",
+          "callStatus": "",
+          "deviceName": "2005-TEST-OFFICE",
+          "deviceSeries": null,
+          "deviceType": "GRP2602",
+          "dnd": 0,
+          "firmwareVersion": "1.0.7.23",
+          "isSynchronized": 1,
+          "lastTime": "2025-08-12 07:22",
+          "mac": "C0:74:AD:83:C8:DA",
+          "orgId": 120715,
+          "orgName": "N/A",
+          "privateip": "172.16.7.235",
+          "publicIp": "115.241.42.138",
+          "scheduledTask": 0,
+          "serverName": "15.207.195.190:5070",
+          "sipAccountInfoList": [
+            {
+              "account": 1,
+              "accountStatus": "Up",
+              "callStatus": "",
+              "dnd": 0,
+              "serverName": "15.207.195.190:5070",
+              "sipServer": "15.207.195.190:5070",
+              "sipUserId": "38092005"
+            }
+          ],
+          "sipServer": "15.207.195.190:5070",
+          "sipUserId": "38092005",
+          "siteId": 484259,
+          "siteName": "2005-TEST-OFFICE",
+          "sn": "20EZ44VN1083C8DA",
+          "status": 1,
+          "syncFailureMsg": null
+        }
+      ],
+      "displayName": "2005-TEST-OFFICE",
+      "extensionEmail": null,
+      "id": 5258159,
+      "mac": "C0:74:AD:83:C8:DA",
+      "modifyTime": "2025-08-11 13:33",
+      "orgId": "120715",
+      "orgName": null,
+      "serverName": "15.207.195.190:5070",
+      "sipServer": "15.207.195.190:5070",
+      "sipUserId": "38092005",
+      "source": 1,
+      "status": 1
+    },
+    {
+      "accountName": "2004-TEST-OFFICE",
+      "deviceInfoList": [
+        {
+          "account": 1,
+          "accountStatus": "Up",
+          "callStatus": "",
+          "deviceName": "2004-TEST-OFFICE",
+          "deviceSeries": null,
+          "deviceType": "GRP2601",
+          "dnd": 0,
+          "firmwareVersion": "1.0.7.23",
+          "isSynchronized": 1,
+          "lastTime": "2025-09-23 10:28",
+          "mac": "C0:74:AD:62:63:15",
+          "orgId": 120715,
+          "orgName": "N/A",
+          "privateip": "172.16.2.32",
+          "publicIp": "115.241.42.138",
+          "scheduledTask": 0,
+          "serverName": "15.207.195.190:5070",
+          "sipAccountInfoList": [
+            {
+              "account": 1,
+              "accountStatus": "Up",
+              "callStatus": "",
+              "dnd": 0,
+              "serverName": "15.207.195.190:5070",
+              "sipServer": "15.207.195.190:5070",
+              "sipUserId": "38092004"
+            },
+            {
+              "account": 2,
+              "accountStatus": "Up",
+              "callStatus": null,
+              "dnd": 0,
+              "serverName": "15.207.195.190:5070",
+              "sipServer": "15.207.195.190:5070",
+              "sipUserId": "38092003"
+            }
+          ],
+          "sipServer": "15.207.195.190:5070",
+          "sipUserId": "38092004",
+          "siteId": 484258,
+          "siteName": "2004-TEST-OFFICE",
+          "sn": "20EZ41MM70626315",
+          "status": 1,
+          "syncFailureMsg": null
+        }
+      ],
+      "displayName": "2004-TEST-OFFICE",
+      "extensionEmail": null,
+      "id": 5258158,
+      "mac": "C0:74:AD:62:63:15",
+      "modifyTime": "2025-08-11 13:33",
+      "orgId": "120715",
+      "orgName": null,
+      "serverName": "15.207.195.190:5070",
+      "sipServer": "15.207.195.190:5070",
+      "sipUserId": "38092004",
+      "source": 1,
+      "status": 1
+    },
+    {
+      "accountName": "2003-TEST-OFFICE",
+      "deviceInfoList": [
+        {
+          "account": 2,
+          "accountStatus": "Up",
+          "callStatus": null,
+          "deviceName": "2004-TEST-OFFICE",
+          "deviceSeries": null,
+          "deviceType": "GRP2601",
+          "dnd": 0,
+          "firmwareVersion": "1.0.7.23",
+          "isSynchronized": 1,
+          "lastTime": "2025-09-23 10:28",
+          "mac": "C0:74:AD:62:63:15",
+          "orgId": 120715,
+          "orgName": "N/A",
+          "privateip": "172.16.2.32",
+          "publicIp": "115.241.42.138",
+          "scheduledTask": 0,
+          "serverName": "15.207.195.190:5070",
+          "sipAccountInfoList": [
+            {
+              "account": 1,
+              "accountStatus": "Up",
+              "callStatus": "",
+              "dnd": 0,
+              "serverName": "15.207.195.190:5070",
+              "sipServer": "15.207.195.190:5070",
+              "sipUserId": "38092004"
+            },
+            {
+              "account": 2,
+              "accountStatus": "Up",
+              "callStatus": null,
+              "dnd": 0,
+              "serverName": "15.207.195.190:5070",
+              "sipServer": "15.207.195.190:5070",
+              "sipUserId": "38092003"
+            }
+          ],
+          "sipServer": "15.207.195.190:5070",
+          "sipUserId": "38092003",
+          "siteId": 484258,
+          "siteName": "2004-TEST-OFFICE",
+          "sn": "20EZ41MM70626315",
+          "status": 1,
+          "syncFailureMsg": null
+        },
+        {
+          "account": 1,
+          "accountStatus": "Up",
+          "callStatus": null,
+          "deviceName": "2003-TEST-OFFICE",
+          "deviceSeries": null,
+          "deviceType": "GRP2601",
+          "dnd": 0,
+          "firmwareVersion": "1.0.1.57",
+          "isSynchronized": 1,
+          "lastTime": "2025-09-23 10:28",
+          "mac": "C0:74:AD:68:C0:FB",
+          "orgId": 120715,
+          "orgName": "N/A",
+          "privateip": "172.16.4.131",
+          "publicIp": "115.241.42.138",
+          "scheduledTask": 0,
+          "serverName": "15.207.195.190:5070",
+          "sipAccountInfoList": [
+            {
+              "account": 1,
+              "accountStatus": "Up",
+              "callStatus": null,
+              "dnd": 0,
+              "serverName": "15.207.195.190:5070",
+              "sipServer": "15.207.195.190:5070",
+              "sipUserId": "38092003"
+            }
+          ],
+          "sipServer": "15.207.195.190:5070",
+          "sipUserId": "38092003",
+          "siteId": 484257,
+          "siteName": "2003-TEST-OFFICE",
+          "sn": "20EZ41MM8068C0FB",
+          "status": 1,
+          "syncFailureMsg": null
+        }
+      ],
+      "displayName": "2003-TEST-OFFICE",
+      "extensionEmail": null,
+      "id": 5258157,
+      "mac": "C0:74:AD:62:63:15",
+      "modifyTime": "2025-09-23 10:28",
+      "orgId": "120715",
+      "orgName": null,
+      "serverName": "15.207.195.190:5070",
+      "sipServer": "15.207.195.190:5070",
+      "sipUserId": "38092003",
+      "source": 1,
+      "status": 1
+    },
+    {
+      "accountName": "2002-TEST-OFFICE",
+      "deviceInfoList": [
+        {
+          "account": 1,
+          "accountStatus": "Up",
+          "callStatus": "",
+          "deviceName": "2002-TEST-OFFICE",
+          "deviceSeries": null,
+          "deviceType": "GRP2602",
+          "dnd": 0,
+          "firmwareVersion": "1.0.7.23",
+          "isSynchronized": 1,
+          "lastTime": "2025-08-12 07:22",
+          "mac": "C0:74:AD:6C:07:1A",
+          "orgId": 120715,
+          "orgName": "N/A",
+          "privateip": "172.16.2.115",
+          "publicIp": "115.241.42.138",
+          "scheduledTask": 0,
+          "serverName": "15.207.195.190:5070",
+          "sipAccountInfoList": [
+            {
+              "account": 1,
+              "accountStatus": "Up",
+              "callStatus": "",
+              "dnd": 0,
+              "serverName": "15.207.195.190:5070",
+              "sipServer": "15.207.195.190:5070",
+              "sipUserId": "38092002"
+            }
+          ],
+          "sipServer": "15.207.195.190:5070",
+          "sipUserId": "38092002",
+          "siteId": 484256,
+          "siteName": "2002-TEST-OFFICE",
+          "sn": "20EZ44SM906C071A",
+          "status": 1,
+          "syncFailureMsg": null
+        }
+      ],
+      "displayName": "2002-TEST-OFFICE",
+      "extensionEmail": null,
+      "id": 5258156,
+      "mac": "C0:74:AD:6C:07:1A",
+      "modifyTime": "2025-08-11 13:33",
+      "orgId": "120715",
+      "orgName": null,
+      "serverName": "15.207.195.190:5070",
+      "sipServer": "15.207.195.190:5070",
+      "sipUserId": "38092002",
+      "source": 1,
+      "status": 1
+    },
+    {
+      "accountName": "2001-TEST-OFFICE",
+      "deviceInfoList": [
+        
+      ],
+      "displayName": "2001-TEST-OFFICE",
+      "extensionEmail": null,
+      "id": 5258155,
+      "mac": "—",
+      "modifyTime": "2025-08-11 13:33",
+      "orgId": "120715",
+      "orgName": null,
+      "serverName": "15.207.195.190:5070",
+      "sipServer": "15.207.195.190:5070",
+      "sipUserId": "38092001",
+      "source": 1,
+      "status": 0
+    }
+  ]
+}

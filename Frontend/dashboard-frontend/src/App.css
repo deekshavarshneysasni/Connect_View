@@ -1,0 +1,328 @@
+/* ===== LAYOUT CONTAINERS ===== */
+:root {
+  --toolbar-h: 56px; /* height of your toolbar row */
+}
+
+.app {
+  display: flex;
+  flex-direction: column; /* stack navbar + content */
+  height: 100vh;
+  width: 100%;
+  font-family: Arial, sans-serif;
+  background: #f5f5f5;
+}
+
+/* ===== NAVBAR ===== */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #1e1e2f;
+  padding: 12px 24px;
+  color: white;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.logo {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: white;
+}
+
+.nav-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.nav-btn {
+  background: #4a5cff;
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: background 0.3s ease;
+}
+
+.nav-btn:hover {
+  background: #3749d6;
+}
+
+/* ===== CONTENT ===== */
+.content {
+  flex: 1;
+  width: 100%;
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  justify-content: center;
+}
+
+.content.center-mode {
+  align-items: center;
+}
+
+.content.table-mode {
+  align-items: flex-start;
+}
+
+/* shared container inside content */
+.center-box {
+  flex: 1;
+  max-width: 1280px;
+  width: 100%;
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== PAGE TITLES ===== */
+.page-title {
+  text-align: center;
+  font-size: 2.8rem;
+  font-weight: bold;
+  color: #1e293b;
+  margin: 40px 0;
+}
+
+/* ===== WELCOME SCREEN ===== */
+.welcome-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1; /* take remaining full height */
+  text-align: center;
+}
+
+.welcome-screen .page-title {
+  font-size: 2.8rem;
+  font-weight: bold;
+  color: #1e293b;
+  margin: 0;
+}
+
+/* ===== LOGIN CARD ===== */
+.cdr-box {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2);
+  width: 320px;
+  margin: 0 auto;
+}
+
+.cdr-box h2 {
+  margin-bottom: 16px;
+  font-size: 1.3rem;
+  color: #1e293b;
+}
+
+.cdr-box input {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.cdr-box button {
+  width: 100%;
+  padding: 10px;
+  background: #007bff;
+  border: none;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.cdr-box button:hover {
+  background: #0056b3;
+}
+
+/* ===== TABLE TOOLBAR ===== */
+.cdr-header {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* center both together */
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.cdr-actions .btn {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  cursor: pointer;
+  background: #fff;
+}
+
+.cdr-actions .btn:hover {
+  background: #f7f7f7;
+}
+
+.btn {
+  padding: 8px 14px;
+  border: 1px solid #007bff;
+  border-radius: 6px;
+  background: #007bff;
+  color: #fff;
+  cursor: pointer;
+  margin-right: 8px;
+  transition: background 0.2s ease;
+}
+
+.btn:hover {
+  background: #0056b3;
+}
+.cdr-icon {
+  font-size: 1.6rem;
+}
+
+/* ===== TABLE AREA ===== */
+.table-wrap {
+  position: relative;
+  overflow-x: auto;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+  padding: 10px;
+  max-height: calc(100vh - 220px);
+}
+
+.cdr-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  min-width: 1200px;
+}
+
+.cdr-table thead th {
+  background: #f8f9fa;
+  font-weight: 600;
+  padding: 10px;
+  border-bottom: 2px solid #e0e0e0;
+  text-align: left;
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.cdr-table tbody td {
+  padding: 10px;
+  border-bottom: 1px solid #f0f0f0;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.cdr-table tbody tr:nth-child(odd) {
+  background: #fafafa;
+}
+
+.cdr-table tbody tr:hover {
+  background: #f1f7ff;
+}
+
+/* ===== SMALL SCREENS ===== */
+@media (max-width: 900px) {
+  .nav-buttons {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .table-wrap {
+    height: calc(100vh - 190px);
+  }
+}
+
+/* ===== GDMS Section ===== */
+.gdms-section {
+  padding: 20px;
+  background-color: #f4f4f4;
+  border-radius: 5px;
+  margin-top: 20px;
+}
+
+/* ===== REPORT BUTTON BAR ===== */
+.report-actions {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 12px;
+  position: sticky;
+  top: 0;
+  background: #f5f5f5;
+  padding: 10px 0;
+  z-index: 10;
+}
+/* ===== CDR SIGN IN ===== */
+.cdr-login-card {
+  background: #fff;
+  padding: 30px 40px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  width: 360px;
+  margin: 40px auto;
+  text-align: center;
+}
+
+.cdr-logo {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #1a1a1a;
+}
+.cdr-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.cdr-form {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.cdr-form label {
+  margin: 10px 0 4px;
+  font-weight: 600;
+  color: #333;
+}
+
+.cdr-form input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  font-size: 1rem;
+}
+
+.cdr-btn {
+  padding: 10px;
+  background: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  width: 100px;
+  margin: 10px auto 0;
+}
+
+.cdr-btn:hover {
+  background: #0056b3;
+}
+
+.cdr-error {
+  margin-top: 12px;
+  color: crimson;
+  font-size: 0.9rem;
+  text-align: left;
+}

@@ -1,0 +1,204 @@
+{
+  "failures": [
+    
+  ],
+  "meta": {
+    "failures": 0,
+    "success": 6,
+    "total": 6
+  },
+  "success": [
+    {
+      "accountStatus": 1,
+      "deviceName": "6001-CCR-1-AIIMS",
+      "deviceSeries": null,
+      "deviceType": "GRP2602",
+      "dnd": null,
+      "firmwareVersion": "1.0.3.31",
+      "isSynchronized": 1,
+      "lastTime": "2025-09-26 03:50",
+      "mac": "C0:74:AD:83:F4:D7",
+      "orgId": 119985,
+      "orgName": "N/A",
+      "privateip": "10.20.20.191",
+      "publicIp": "103.47.175.54",
+      "scheduledTask": 0,
+      "sipAccountInfoList": [
+        {
+          "account": 1,
+          "accountStatus": "Up",
+          "callStatus": null,
+          "dnd": 0,
+          "serverName": "65.0.243.16:5070",
+          "sipServer": "voip.connectview.in:5070",
+          "sipUserId": "38096001"
+        }
+      ],
+      "siteId": 464288,
+      "siteName": "6001-CCR-1-AIIMS",
+      "sn": "20EZ44VN1083F4D7",
+      "status": 0,
+      "syncFailureMsg": null
+    },
+    {
+      "accountStatus": 1,
+      "deviceName": "6003-CCR-3-AIIMS",
+      "deviceSeries": null,
+      "deviceType": "GRP2602",
+      "dnd": null,
+      "firmwareVersion": "1.0.7.24",
+      "isSynchronized": 1,
+      "lastTime": "2025-09-26 03:50",
+      "mac": "C0:74:AD:6C:0B:05",
+      "orgId": 119985,
+      "orgName": "N/A",
+      "privateip": "10.20.20.194",
+      "publicIp": "103.47.175.54",
+      "scheduledTask": 0,
+      "sipAccountInfoList": [
+        {
+          "account": 1,
+          "accountStatus": "Up",
+          "callStatus": null,
+          "dnd": 0,
+          "serverName": "65.0.243.16:5070",
+          "sipServer": "voip.connectview.in:5070",
+          "sipUserId": "38096003"
+        }
+      ],
+      "siteId": 464290,
+      "siteName": "6003-CCR-3-AIIMS",
+      "sn": "20EZ44SM906C0B05",
+      "status": 0,
+      "syncFailureMsg": null
+    },
+    {
+      "accountStatus": 1,
+      "deviceName": "6005-CCR-5-AIIMS",
+      "deviceSeries": null,
+      "deviceType": "GRP2601",
+      "dnd": null,
+      "firmwareVersion": "1.0.7.15",
+      "isSynchronized": 1,
+      "lastTime": "2025-09-26 03:50",
+      "mac": "C0:74:AD:62:5C:BF",
+      "orgId": 119985,
+      "orgName": "N/A",
+      "privateip": "10.20.20.213",
+      "publicIp": "103.47.175.54",
+      "scheduledTask": 0,
+      "sipAccountInfoList": [
+        {
+          "account": 1,
+          "accountStatus": "Up",
+          "callStatus": null,
+          "dnd": 0,
+          "serverName": "65.0.243.16:5070",
+          "sipServer": "voip.connectview.in:5070",
+          "sipUserId": "38096005"
+        }
+      ],
+      "siteId": 464292,
+      "siteName": "6005-CCR-5-AIIMS",
+      "sn": "20EZ41MM70625CBF",
+      "status": 0,
+      "syncFailureMsg": null
+    },
+    {
+      "accountStatus": 1,
+      "deviceName": "6002-CCR-2-AIIMS",
+      "deviceSeries": null,
+      "deviceType": "GRP2601",
+      "dnd": null,
+      "firmwareVersion": "1.0.7.15",
+      "isSynchronized": 1,
+      "lastTime": "2025-09-26 03:50",
+      "mac": "C0:74:AD:68:C3:0C",
+      "orgId": 119985,
+      "orgName": "N/A",
+      "privateip": "10.20.20.192",
+      "publicIp": "103.47.175.54",
+      "scheduledTask": 0,
+      "sipAccountInfoList": [
+        {
+          "account": 1,
+          "accountStatus": "Up",
+          "callStatus": null,
+          "dnd": 0,
+          "serverName": "65.0.243.16:5070",
+          "sipServer": "voip.connectview.in:5070",
+          "sipUserId": "38096002"
+        }
+      ],
+      "siteId": 464289,
+      "siteName": "6002-CCR-2-AIIMS",
+      "sn": "20EZ41MM8068C30C",
+      "status": 0,
+      "syncFailureMsg": null
+    },
+    {
+      "accountStatus": 1,
+      "deviceName": "6006-CCR-6-AIIMS",
+      "deviceSeries": null,
+      "deviceType": "GRP2602",
+      "dnd": null,
+      "firmwareVersion": "1.0.5.46",
+      "isSynchronized": 1,
+      "lastTime": "2025-09-26 03:50",
+      "mac": "C0:74:AD:83:CD:55",
+      "orgId": 119985,
+      "orgName": "N/A",
+      "privateip": "10.20.20.221",
+      "publicIp": "103.47.175.54",
+      "scheduledTask": 0,
+      "sipAccountInfoList": [
+        {
+          "account": 1,
+          "accountStatus": "Up",
+          "callStatus": null,
+          "dnd": 0,
+          "serverName": "65.0.243.16:5070",
+          "sipServer": "voip.connectview.in:5070",
+          "sipUserId": "38096006"
+        }
+      ],
+      "siteId": 464293,
+      "siteName": "6006-CCR-6-AIIMS",
+      "sn": "20EZ44VN1083CD55",
+      "status": 0,
+      "syncFailureMsg": null
+    },
+    {
+      "accountStatus": 1,
+      "deviceName": "6004-CCR-4-AIIMS",
+      "deviceSeries": null,
+      "deviceType": "GRP2601",
+      "dnd": null,
+      "firmwareVersion": "1.0.7.15",
+      "isSynchronized": 1,
+      "lastTime": "2025-09-26 03:50",
+      "mac": "C0:74:AD:62:63:0D",
+      "orgId": 119985,
+      "orgName": "N/A",
+      "privateip": "10.20.20.202",
+      "publicIp": "103.47.175.54",
+      "scheduledTask": 0,
+      "sipAccountInfoList": [
+        {
+          "account": 1,
+          "accountStatus": "Up",
+          "callStatus": null,
+          "dnd": 0,
+          "serverName": "65.0.243.16:5070",
+          "sipServer": "voip.connectview.in:5070",
+          "sipUserId": "38096004"
+        }
+      ],
+      "siteId": 464291,
+      "siteName": "6004-CCR-4-AIIMS",
+      "sn": "20EZ41MM7062630D",
+      "status": 0,
+      "syncFailureMsg": null
+    }
+  ]
+}
