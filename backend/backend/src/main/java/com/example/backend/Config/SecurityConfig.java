@@ -9,7 +9,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.firewall.HttpFirewall;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
-
 import java.util.Arrays;
 
 @Configuration
@@ -20,7 +19,6 @@ public class SecurityConfig {
     public HttpFirewall relaxedHttpFirewall() {
         StrictHttpFirewall firewall = new StrictHttpFirewall();
         firewall.setAllowedHttpMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-
 
         firewall.setAllowSemicolon(true);
         firewall.setAllowUrlEncodedPercent(true);
@@ -38,12 +36,16 @@ public class SecurityConfig {
                         // ✅ allow all GDMS endpoints
                         .requestMatchers("/gdms/**").permitAll()
 
+                        // ✅ allow PBX endpoints
+                        .requestMatchers("/api/pbx/**").permitAll()
+                        .requestMatchers("/pbx/**").permitAll()
+
                         // other public endpoints
                         .requestMatchers("/pbx/auth/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/users/filtered-report").permitAll()
                         .requestMatchers(HttpMethod.PATCH, "/api/users/filtered-report").permitAll()
 
-                        // everything else requires login
+                        // ❌ everything else requires login
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form.disable())

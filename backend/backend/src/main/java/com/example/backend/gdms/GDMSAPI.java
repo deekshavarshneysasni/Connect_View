@@ -870,7 +870,7 @@ public class GDMSAPI {
         System.out.println("Step 1: Fetching organizations...");
         java.util.List<java.util.Map<String, Object>> orgs = listOrgsAll(1000);
         writeJson("orgs.json", mapOf("data", orgs));
-        System.out.println("✅ Orgs fetched: " + orgs.size() + "  | 💾 Saved → orgs.json");
+        // System.out.println("✅ Orgs fetched: " + orgs.size() + "  | 💾 Saved → orgs.json");
 
         int preview = Math.min(5, orgs.size());
         if (preview > 0) {
@@ -949,7 +949,7 @@ public class GDMSAPI {
         }
 
         writeJson("devices_by_org.selected.json", mapOf("data", allDevices));
-        System.out.println("💾 Saved → devices_by_org.selected.json");
+        //System.out.println("💾 Saved → devices_by_org.selected.json");
 
         fetchDeviceAccountStatusForSelectedOrgs(allDevices, selected);
     }

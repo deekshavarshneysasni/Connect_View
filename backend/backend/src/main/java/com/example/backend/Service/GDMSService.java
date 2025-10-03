@@ -118,7 +118,7 @@ public class GDMSService {
     /**
      * ✅ SIP report:
      * - One row per SIP account (grouped by sipUserId)
-     * - Status normalized (Active/Inactive/Abnormal)
+     * - Status normalized (Active/Inactiv e/Abnormal)
      * - Multiple devices per SIP account collected as MAC1/MAC2/...
      * - MAC normalized (Unallocated if missing)
      */
