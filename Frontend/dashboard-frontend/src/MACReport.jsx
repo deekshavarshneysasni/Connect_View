@@ -1,7 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import * as XLSX from "xlsx";
 
-// helper to tolerate either DTO keys or raw keys
 const pick = (obj, keys, fallback = "—") => {
   for (const k of keys) {
     const v = obj?.[k];
@@ -17,10 +16,53 @@ const yesNo = (v) =>
     ? "No"
     : "—";
 
+const ALL_COLUMNS = [
+  { key: "mac", label: "MAC Address", pick: (r) => pick(r, ["macAddress", "mac"]) },
+  { key: "sn", label: "SN", pick: (r) => pick(r, ["sn"]) },
+  { key: "deviceName", label: "Device Name", pick: (r) => pick(r, ["deviceName", "devicename"]) },
+  { key: "siteName", label: "Site Name", pick: (r) => pick(r, ["siteName"]) },
+  { key: "deviceModel", label: "Device Model", pick: (r) => pick(r, ["deviceModel", "deviceType"]) },
+  { key: "firmwareVersion", label: "Firmware Version", pick: (r) => pick(r, ["firmwareVersion"]) },
+  {
+    key: "deviceStatus",
+    label: "Device Status",
+    pick: (r) => {
+      const s = pick(r, ["deviceStatus", "status"], undefined);
+      return s === 1 ? "Online" : s === 0 ? "Offline" : s === -1 ? "Abnormal" : "—";
+    },
+  },
+  {
+    key: "pushConfiguration",
+    label: "Push Configuration",
+    pick: (r) => yesNo(pick(r, ["pushConfiguration", "isSynchronized"], null)),
+  },
+  { key: "lastConfigTime", label: "Last Config Time", pick: (r) => pick(r, ["lastConfigTime", "lastTime"]) },
+  { key: "account1UserId", label: "Account 1 User ID", pick: (r) => pick(r, ["account1UserId", "sipUserId"]) },
+  { key: "account1SipServer", label: "Account 1 SIP Server", pick: (r) => pick(r, ["account1SipServer", "sipServer"]) },
+];
+
 export default function MACReport({ orgId }) {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
+  const [search, setSearch] = useState("");
+  const [selectedCols, setSelectedCols] = useState(ALL_COLUMNS.map((c) => c.key));
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  const dropdownRef = useRef(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
     if (!orgId) return;
@@ -30,7 +72,7 @@ export default function MACReport({ orgId }) {
       try {
         setLoading(true);
         setErr("");
-        setRows([]); // reset previous rows
+        setRows([]);
 
         const res = await fetch(
           `http://localhost:8080/gdms/report?orgId=${orgId}`,
@@ -38,28 +80,10 @@ export default function MACReport({ orgId }) {
         );
         if (!res.ok) throw new Error(`Failed (${res.status})`);
 
-        const reader = res.body.getReader();
-        const decoder = new TextDecoder();
-        let buffer = "";
-
-        while (true) {
-          const { value, done } = await reader.read();
-          if (done) break;
-
-          buffer += decoder.decode(value, { stream: true });
-
-          try {
-            const parsed = JSON.parse(buffer);
-            if (Array.isArray(parsed)) {
-              setRows(parsed);
-            }
-          } catch {
-            // partial JSON, wait for more chunks
-          }
-        }
+        const data = await res.json();
+        setRows(data || []);
       } catch (e) {
-        if (e.name !== "AbortError")
-          setErr(e.message || "Failed to load report");
+        if (e.name !== "AbortError") setErr(e.message || "Failed to load report");
       } finally {
         setLoading(false);
       }
@@ -68,33 +92,69 @@ export default function MACReport({ orgId }) {
     return () => controller.abort();
   }, [orgId]);
 
-  const downloadReport = () => {
-    if (!rows.length) return;
+// Filter rows by search text across ALL columns
+// Filter rows by search text across raw + picked values
+const filteredRows = rows.filter((r) => {
+  const text = search.toLowerCase();
 
-    const records = rows.map((r) => ({
-      "MAC Address": pick(r, ["macAddress", "mac"]),
-      SN: pick(r, ["sn"]),
-      "Device Name": pick(r, ["deviceName", "devicename"]),
-      "Site Name": pick(r, ["siteName"]),
-      "Device Model": pick(r, ["deviceModel", "deviceType"]),
-      "Firmware Version": pick(r, ["firmwareVersion"]),
-      "Device Status": (() => {
-        const s = pick(r, ["deviceStatus", "status"], undefined);
-        return s === 1
-          ? "Online"
-          : s === 0
-          ? "Offline"
-          : s === -1
-          ? "Abnormal"
-          : "—";
-      })(),
-      "Push Configuration": yesNo(
-        pick(r, ["pushConfiguration", "isSynchronized"], null)
-      ),
-      "Last Config Time": pick(r, ["lastConfigTime", "lastTime"]),
-      "Account 1 User ID": pick(r, ["account1UserId", "sipUserId"]),
-      "Account 1 SIP Server": pick(r, ["account1SipServer", "sipServer"]),
-    }));
+  // 1. Raw row values
+  const rawMatch = Object.values(r).some((val) =>
+    String(val || "").toLowerCase().includes(text)
+  );
+
+  // 2. Processed column values
+  const colMatch = ALL_COLUMNS.some((col) =>
+    String(col.pick(r) || "").toLowerCase().includes(text)
+  );
+
+  return rawMatch || colMatch;
+});
+{/* Search Bar with Clear Button */}
+<div style={{ position: "relative", display: "inline-block" }}>
+  <input
+    type="text"
+    placeholder="🔍 Search..."
+    value={search}
+    onChange={(e) => setSearch(e.target.value)}
+    style={{ paddingRight: "25px" }} // give space for the ❌
+  />
+  {search && (
+    <button
+      onClick={() => setSearch("")}
+      style={{
+        position: "absolute",
+        right: "5px",
+        top: "50%",
+        transform: "translateY(-50%)",
+        border: "none",
+        background: "transparent",
+        cursor: "pointer",
+        fontSize: "14px",
+      }}
+    >
+      ❌
+    </button>
+  )}
+</div>
+
+  const toggleColumn = (key) => {
+    setSelectedCols((prev) =>
+      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
+    );
+  };
+
+  const downloadReport = () => {
+    if (!filteredRows.length) return;
+
+    const records = filteredRows.map((r) => {
+      const obj = {};
+      ALL_COLUMNS.forEach((col) => {
+        if (selectedCols.includes(col.key)) {
+          obj[col.label] = col.pick(r);
+        }
+      });
+      return obj;
+    });
 
     const ws = XLSX.utils.json_to_sheet(records);
     const wb = XLSX.utils.book_new();
@@ -116,8 +176,38 @@ export default function MACReport({ orgId }) {
 
   return (
     <div className="report-container">
-      {/* Fixed button outside table */}
-      <div className="report-actions">
+      <div className="report-actions" style={{ display: "flex", gap: "10px" }}>
+        {/* Search Bar */}
+        <input
+          type="text"
+          placeholder="🔍 Search..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+
+        {/* Column Selector Dropdown */}
+       <div className="dropdown" ref={dropdownRef}>
+  <button className="dropdown-btn" onClick={() => setShowDropdown(!showDropdown)}>
+    Select Columns ⬇️
+  </button>
+
+  {showDropdown && (
+    <div className="dropdown-menu">
+      {ALL_COLUMNS.map((col) => (
+        <label key={col.key} className="dropdown-item">
+          <input
+            type="checkbox"
+            checked={selectedCols.includes(col.key)}
+            onChange={() => toggleColumn(col.key)}
+          />
+          {col.label}
+        </label>
+      ))}
+    </div>
+  )}
+</div>
+
+
         <button className="btn" onClick={downloadReport}>
           ⬇️ Download Report
         </button>
@@ -128,44 +218,17 @@ export default function MACReport({ orgId }) {
           <table className="cdr-table">
             <thead>
               <tr>
-                <th>MAC Address</th>
-                <th>SN</th>
-                <th>Device Name</th>
-                <th>Site Name</th>
-                <th>Device Model</th>
-                <th>Firmware Version</th>
-                <th>Device Status</th>
-                <th>Push Configuration</th>
-                <th>Last Config Time</th>
-                <th>Account 1 User ID</th>
-                <th>Account 1 SIP Server</th>
+                {ALL_COLUMNS.filter((c) => selectedCols.includes(c.key)).map((col) => (
+                  <th key={col.key}>{col.label}</th>
+                ))}
               </tr>
             </thead>
             <tbody>
-              {rows.map((r, i) => (
+              {filteredRows.map((r, i) => (
                 <tr key={i}>
-                  <td>{pick(r, ["macAddress", "mac"])}</td>
-                  <td>{pick(r, ["sn"])}</td>
-                  <td>{pick(r, ["deviceName", "devicename"])}</td>
-                  <td>{pick(r, ["siteName"])}</td>
-                  <td>{pick(r, ["deviceModel", "deviceType"])}</td>
-                  <td>{pick(r, ["firmwareVersion"])}</td>
-                  <td>
-                    {(() => {
-                      const s = pick(r, ["deviceStatus", "status"], undefined);
-                      return s === 1
-                        ? "Online"
-                        : s === 0
-                        ? "Offline"
-                        : s === -1
-                        ? "Abnormal"
-                        : "—";
-                    })()}
-                  </td>
-                  <td>{yesNo(pick(r, ["pushConfiguration", "isSynchronized"], null))}</td>
-                  <td>{pick(r, ["lastConfigTime", "lastTime"])}</td>
-                  <td>{pick(r, ["account1UserId", "sipUserId"])}</td>
-                  <td>{pick(r, ["account1SipServer", "sipServer"])}</td>
+                  {ALL_COLUMNS.filter((c) => selectedCols.includes(c.key)).map((col) => (
+                    <td key={col.key}>{col.pick(r)}</td>
+                  ))}
                 </tr>
               ))}
             </tbody>

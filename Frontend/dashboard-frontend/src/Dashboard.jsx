@@ -80,7 +80,6 @@ function buildDateWithAssumedTZ(year, mon, day, HH, MM, SS) {
   return new Date(year, mon - 1, day, HH, MM, SS, 0);
 }
 
-// Robust date parser
 function coerceToDate(val) {
   if (val == null || val === "" || val === "None") return null;
 
@@ -92,37 +91,30 @@ function coerceToDate(val) {
   if (typeof val === "string") {
     const s = val.trim();
 
-    // epoch
     if (/^\d+$/.test(s)) {
       const n = Number(s);
       const ms = n < 1e11 ? n * 1000 : n;
       return new Date(ms);
     }
 
-    // ISO with Z/offset
     if (/Z$|[+\-]\d{2}:\d{2}$/.test(s)) return new Date(s);
 
-    // YYYY-MM-DD [HH:mm[:ss]]
     let m =
       s.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?$/) ||
       s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
     if (m) return buildDateWithAssumedTZ(+m[1], +m[2], +m[3], +(m[4]||0), +(m[5]||0), +(m[6]||0));
 
-    // DD-MM-YYYY [HH:mm[:ss]]
     m = s.match(/^(\d{2})-(\d{2})-(\d{4})(?:[ T](\d{2}):(\d{2})(?::(\d{2}))?)?$/);
     if (m) return buildDateWithAssumedTZ(+m[3], +m[2], +m[1], +(m[4]||0), +(m[5]||0), +(m[6]||0));
 
-    // DD/MM/YYYY [HH:mm[:ss]]
     m = s.match(/^(\d{2})\/(\d{2})\/(\d{4})(?:[ T](\d{2}):(\d{2})(?::(\d{2}))?)?$/);
     if (m) return buildDateWithAssumedTZ(+m[3], +m[2], +m[1], +(m[4]||0), +(m[5]||0), +(m[6]||0));
 
-    // last try
     return new Date(s);
   }
   return null;
 }
 
-// Parse input type="date" (YYYY-MM-DD) as local midnight
 function parseInputYMD(ymd) {
   if (!ymd) return null;
   const [y, m, d] = ymd.split("-").map(Number);
@@ -147,7 +139,7 @@ function formatSecondsHMS(sec) {
 
 function fmtCell(key, val) {
   if (val === null || val === undefined || val === "") return "—";
-  if (val === "None") return "None";   // keep explicit "None"
+  if (val === "None") return "None";
   if (val === 0 || val === "0") return "0";
   if (DURATION_FIELDS.has(key)) {
     if (typeof val === "number") return formatSecondsHMS(val);
@@ -170,6 +162,7 @@ function fileTimestampParts() {
     timeStr: `${pad(d.getHours())}.${pad(d.getMinutes())}.${pad(d.getSeconds())}`
   };
 }
+
 /* ===================== Component ===================== */
 
 export default function Dashboard({ onAuthError }) {
@@ -178,15 +171,12 @@ export default function Dashboard({ onAuthError }) {
   const [err, setErr] = useState("");
   const didRun = useRef(false);
 
-  // date range (YYYY-MM-DD from <input type="date">)
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
-
-  // column selector
   const [selectedCols, setSelectedCols] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
 
-  // pagination
+  const [search, setSearch] = useState("");   // 🔍 NEW
   const [page, setPage] = useState(1);
   const rowsPerPage = 50;
 
@@ -196,14 +186,12 @@ export default function Dashboard({ onAuthError }) {
     );
   };
 
-  // ---- fetcher (server + client-side fallback date filter) ----
   const fetchReport = async (signal) => {
     const token = localStorage.getItem("pbx_token");
     const uname = sessionStorage.getItem("pbx_username");
     const pwd = sessionStorage.getItem("pbx_password");
     if (!token || !uname || !pwd) throw new Error("Not logged in / missing credentials");
 
-    // Send dates to server (safe if backend ignores)
     const qs = new URLSearchParams();
     if (fromDate) qs.set("from", fromDate);
     if (toDate)   qs.set("to", toDate);
@@ -231,7 +219,6 @@ export default function Dashboard({ onAuthError }) {
     const list = Array.isArray(data) ? data : data?.data || [];
     const normalized = list.map((r) => normalizeRow(flatten(r)));
 
-    // ✅ Client-side fallback filter by start_time when both dates are set
     if (fromDate && toDate) {
       const f = parseInputYMD(fromDate);
       const t = parseInputYMD(toDate);
@@ -247,7 +234,6 @@ export default function Dashboard({ onAuthError }) {
     return normalized;
   };
 
-  // initial load
   useEffect(() => {
     if (didRun.current) return;
     didRun.current = true;
@@ -261,7 +247,7 @@ export default function Dashboard({ onAuthError }) {
       finally { setLoading(false); }
     })();
     return () => controller.abort();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []); 
 
   const handleSearch = async () => {
     if (fromDate && toDate && new Date(toDate) < new Date(fromDate)) {
@@ -272,8 +258,7 @@ export default function Dashboard({ onAuthError }) {
       setLoading(true); setErr("");
       const controller = new AbortController();
       const normalized = await fetchReport(controller.signal);
-      setRows(normalized || []);
-      setPage(1);
+      setRows(normalized || []); setPage(1);
     } catch (e) { setErr(e.message); }
     finally { setLoading(false); }
   };
@@ -294,10 +279,26 @@ export default function Dashboard({ onAuthError }) {
     ? columns.filter((c) => selectedCols.includes(c.key))
     : columns;
 
+  // 🔍 filter rows
+  const filteredRows = useMemo(() => {
+    if (!search.trim()) return rows;
+    const text = search.toLowerCase();
+
+    return rows.filter((r) => {
+      const rawMatch = Object.values(r).some((val) =>
+        String(val || "").toLowerCase().includes(text)
+      );
+      const colMatch = columns.some((col) =>
+        String(fmtCell(col.key, r[col.key]) || "").toLowerCase().includes(text)
+      );
+      return rawMatch || colMatch;
+    });
+  }, [rows, search, columns]);
+
   const paginatedRows = useMemo(() => {
     const start = (page - 1) * rowsPerPage;
-    return rows.slice(start, start + rowsPerPage);
-  }, [rows, page]);
+    return filteredRows.slice(start, start + rowsPerPage);
+  }, [filteredRows, page]);
 
   const downloadXLSX = () => {
     if (!rows.length) return;
@@ -310,7 +311,7 @@ export default function Dashboard({ onAuthError }) {
     const ws = XLSX.utils.json_to_sheet(records, { header: headerLabels });
     ws["!cols"] = headerLabels.map(() => ({ wch: 18 }));
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "CDR Report");
+    XLSX.utils.book_append_sheet(wb, ws, "VOIP REPORT");
     const { dateStr, timeStr } = fileTimestampParts();
     XLSX.utils.book_append_sheet(
       wb,
@@ -323,14 +324,15 @@ export default function Dashboard({ onAuthError }) {
       ]),
       "Info"
     );
-    XLSX.writeFile(wb, `cdr-report-${dateStr}-${timeStr}.xlsx`);
+    XLSX.writeFile(wb, `voip-report-${dateStr}-${timeStr}.xlsx`);
   };
 
-  if (loading) return <div>Loading CDR…</div>;
+  if (loading) return <div>Loading VOIP REPORT…</div>;
   if (err) return <div style={{ color: "crimson" }}>{err}</div>;
   if (!rows.length) return (
     <div>
-      No CDR records found.
+      <h2 className="page-title">VOIP REPORT</h2>
+      <p>No VoIP records found.</p>
       <div style={{ marginTop: 8 }}>
         <label>From <input type="date" value={fromDate} onChange={(e)=>setFromDate(e.target.value)} /></label>
         <label style={{ marginLeft: 8 }}>To <input type="date" value={toDate} onChange={(e)=>setToDate(e.target.value)} /></label>
@@ -340,33 +342,52 @@ export default function Dashboard({ onAuthError }) {
   );
 
   return (
-    <div className="table-wrap">
-      <div className="hscroll-strip">
-        {/* Toolbar */}
-        <div className="cdr-header" style={{ display: "flex", gap: 16, flexWrap: "wrap", justifyContent: "space-between" }}>
-          {/* date filter */}
-          <div style={{ display: "flex", gap: 12 }}>
+    <div className="report-container">
+      {/* Sticky header */}
+      <div className="report-header" style={{
+        position: "sticky",
+        top: 0,
+        background: "#fff",
+        zIndex: 100,
+        paddingBottom: 10,
+        borderBottom: "1px solid #eee"
+      }}>
+        <h2 className="page-title" style={{ margin: "12px 0" }}>VOIP REPORT</h2>
+
+        <div className="cdr-header" style={{
+          display: "flex",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+          gap: 12
+        }}>
+          {/* Date filter */}
+          <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
             <label>From <input type="date" value={fromDate} onChange={(e)=>setFromDate(e.target.value)} /></label>
             <label>To <input type="date" value={toDate} onChange={(e)=>setToDate(e.target.value)} /></label>
             <button className="btn" onClick={handleSearch}>Search</button>
-            {fromDate && toDate && new Date(toDate) < new Date(fromDate) && (
-              <span style={{ color: "crimson", fontSize: 12 }}>“To” must be on/after “From”.</span>
-            )}
           </div>
 
-          {/* actions + pagination + column selector */}
+          {/* Actions + pagination + column selector */}
           <div style={{ display: "flex", gap: 12, position: "relative", flexWrap: "wrap" }}>
-            <button className="btn" onClick={() => setPage(p=>Math.max(1,p-1))} disabled={page===1}>Prev</button>
-            <span style={{ alignSelf: "center" }}>Page {page} of {Math.ceil(rows.length / rowsPerPage)}</span>
-            <button className="btn" onClick={() => setPage(p=>p+1)} disabled={page*rowsPerPage>=rows.length}>Next</button>
+            {/* 🔍 Search bar */}
+            <input
+              type="text"
+              placeholder="🔍 Search..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              style={{ padding: "6px 10px", border: "1px solid #ccc", borderRadius: "6px" }}
+            />
 
             <button className="btn" onClick={refresh}>Refresh</button>
             <button className="btn" onClick={downloadXLSX}>Download</button>
+            <button className="btn" onClick={() => setPage(p=>Math.max(1,p-1))} disabled={page===1}>Prev</button>
+            <span style={{ alignSelf: "center" }}>Page {page} of {Math.ceil(filteredRows.length / rowsPerPage)}</span>
+            <button className="btn" onClick={() => setPage(p=>p+1)} disabled={page*rowsPerPage>=filteredRows.length}>Next</button>
 
             <div>
-              <button className="btn" onClick={() => setShowDropdown(s=>!s)}>Select Columns ▾</button>
+              <button className="btn secondary" onClick={() => setShowDropdown(s=>!s)}>Select Columns ▾</button>
               {showDropdown && (
-                <div style={{ position: "absolute", top: "100%", right: 0, background: "white", border: "1px solid #ccc", borderRadius: 6, padding: 8, zIndex: 1000, maxHeight: 300, overflowY: "auto", minWidth: 180 }}>
+                <div className="column-dropdown">
                   <div style={{ marginBottom: 6 }}>
                     <label>
                       <input
@@ -379,7 +400,11 @@ export default function Dashboard({ onAuthError }) {
                   {columns.map(({ key, label }) => (
                     <div key={key}>
                       <label>
-                        <input type="checkbox" checked={selectedCols.includes(key)} onChange={()=>toggleColumn(key)} /> {label}
+                        <input
+                          type="checkbox"
+                          checked={selectedCols.includes(key)}
+                          onChange={()=>toggleColumn(key)}
+                        /> {label}
                       </label>
                     </div>
                   ))}
@@ -388,10 +413,16 @@ export default function Dashboard({ onAuthError }) {
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Table */}
+      {/* Scrollable table */}
+      <div className="table-wrap" style={{
+        maxHeight: "70vh",
+        overflowY: "auto",
+        overflowX: "auto"
+      }}>
         <table className="cdr-table">
-          <thead>
+          <thead style={{ position: "sticky", top: 0, background: "#f9f9f9", zIndex: 50 }}>
             <tr>{activeCols.map(({ key, label }) => <th key={key}>{label}</th>)}</tr>
           </thead>
           <tbody>

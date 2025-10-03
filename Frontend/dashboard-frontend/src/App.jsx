@@ -16,25 +16,16 @@ export default function App() {
   const [pbxToken, setPbxToken] = useState("");
   const [isPbxLoggedIn, setIsPbxLoggedIn] = useState(false);
 
-  // GDMS state
-  const [gdmsToken, setGdmsToken] = useState("");
-  const [isGdmsLoggedIn, setIsGdmsLoggedIn] = useState(false);
-
   // UI helpers
   const [loading, setLoading] = useState(false);
   const [errMsg, setErrMsg] = useState("");
 
-  // Load tokens on mount
+  // Load PBX token on mount
   useEffect(() => {
     const storedPbx = localStorage.getItem("pbx_token");
-    const storedGdms = localStorage.getItem("gdms_token");
     if (storedPbx) {
       setPbxToken(storedPbx);
       setIsPbxLoggedIn(true);
-    }
-    if (storedGdms) {
-      setGdmsToken(storedGdms);
-      setIsGdmsLoggedIn(true);
     }
   }, []);
 
@@ -97,70 +88,47 @@ export default function App() {
     setShowCDR(false);
   };
 
-  // GDMS login/logout
-  const handleGDMSLogin = (token) => {
-    localStorage.setItem("gdms_token", token);
-    setGdmsToken(token);
-    setIsGdmsLoggedIn(true);
-    setShowGDMS(false);
-  };
-
-  const handleGdmsLogout = () => {
-    localStorage.removeItem("gdms_token");
-    setGdmsToken("");
-    setIsGdmsLoggedIn(false);
-    setShowGDMS(false);
-  };
-
-  // Contextual logout
-  const handleContextualLogout = () => {
-    if (showCDR) {
-      handlePbxLogout();
-    } else if (showGDMS) {
-      handleGdmsLogout();
-    } else {
-      handlePbxLogout();
-      handleGdmsLogout();
-    }
-  };
-
   return (
     <div className="app">
-      {/* NAVBAR */}
+      {/* Navbar */}
       <div className="navbar">
         <h2 className="logo">ConnectView</h2>
         <div className="nav-buttons">
-          <button
-            onClick={() =>
-              setShowCDR((prev) => {
-                const next = !prev;
-                if (next) setShowGDMS(false);
-                return next;
-              })
-            }
-            className="nav-btn"
-          >
-            {showCDR ? "Close PBX" : "Open PBX"}
-          </button>
+          {/* PBX buttons */}
+          {!isPbxLoggedIn ? (
+            <button
+              onClick={() => {
+                setShowCDR(true);
+                setShowGDMS(false);
+              }}
+              className="nav-btn"
+            >
+              Open VoIP Report
+            </button>
+          ) : (
+            <>
+              <button
+                onClick={() => setShowCDR((prev) => !prev)}
+                className="nav-btn"
+              >
+                {showCDR ? "Close VoIP Report" : "Open VoIP Report"}
+              </button>
+              <button onClick={handlePbxLogout} className="nav-btn">
+                Logout PBX
+              </button>
+            </>
+          )}
 
+          {/* GDMS buttons → only toggle, no logout */}
           <button
-            onClick={() =>
-              setShowGDMS((prev) => {
-                const next = !prev;
-                if (next) setShowCDR(false);
-                return next;
-              })
-            }
+            onClick={() => {
+              setShowGDMS((prev) => !prev);
+              setShowCDR(false);
+            }}
             className="nav-btn"
           >
             {showGDMS ? "Close GDMS" : "Open GDMS"}
           </button>
-
-          {(showCDR && isPbxLoggedIn) || (showGDMS && isGdmsLoggedIn) ? (
-            <button onClick={handleContextualLogout} className="nav-btn">
-              {showCDR ? "Logout from PBX" : "Logout from GDMS"}
-            </button>
-          ) : null}
         </div>
       </div>
 
@@ -173,55 +141,51 @@ export default function App() {
           </div>
         )}
 
-      {/* PBX Section */}
-{showCDR && (
-  <div className="pbx-section">
-    {!isPbxLoggedIn ? (
-      // SIGN IN CARD
-      <div className="cdr-login-card">
-       <div className="cdr-header">
-  <span className="cdr-icon">📞</span>
-  <span className="cdr-logo">ConnectView</span>
-</div>
+        {/* PBX Section */}
+        {showCDR && (
+          <div className="pbx-section">
+            {!isPbxLoggedIn ? (
+              <div className="cdr-login-card">
+                <div className="cdr-header">
+                  <span className="cdr-logo">ConnectView</span>
+                </div>
 
-        <h2 className="cdr-title">Sign In</h2>
+                <h2 className="cdr-title">Sign In</h2>
 
-        <form onSubmit={handleLogin} className="cdr-form">
-          <label>Email</label>
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
+                <form onSubmit={handleLogin} className="cdr-form">
+                  <label>Username</label>
+                  <input
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                  />
 
-          <label>Password</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+                  <label>Password</label>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
 
-          <button type="submit" className="cdr-btn" disabled={loading}>
-            {loading ? "Logging in..." : "Sign In"}
-          </button>
-        </form>
+                  <button type="submit" className="cdr-btn" disabled={loading}>
+                    {loading ? "Logging in..." : "Sign In"}
+                  </button>
+                </form>
 
-        {errMsg && <p className="cdr-error">{errMsg}</p>}
-      </div>
-    ) : (
-      // CDR DASHBOARD
-      <Dashboard
-        onAuthError={() => {
-          setIsPbxLoggedIn(false);
-          localStorage.removeItem("pbx_token");
-          setPbxToken("");
-        }}
-        pbxToken={pbxToken}   // ✅ Pass token into Dashboard
-      />
-    )}
-  </div>
-)}
-
+                {errMsg && <p className="cdr-error">{errMsg}</p>}
+              </div>
+            ) : (
+              <Dashboard
+                onAuthError={() => {
+                  setIsPbxLoggedIn(false);
+                  localStorage.removeItem("pbx_token");
+                  setPbxToken("");
+                }}
+                pbxToken={pbxToken}
+              />
+            )}
+          </div>
+        )}
 
         {/* GDMS Section */}
         {showGDMS && (

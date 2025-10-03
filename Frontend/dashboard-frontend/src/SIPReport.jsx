@@ -1,9 +1,25 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 
 export default function SIPReport({ orgId }) {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
+  const [search, setSearch] = useState("");
+  const [selectedCols, setSelectedCols] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  const dropdownRef = useRef(null);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handler = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
 
   useEffect(() => {
     if (!orgId) return;
@@ -13,14 +29,14 @@ export default function SIPReport({ orgId }) {
       try {
         setLoading(true);
         setErr("");
-        setRows([]); // reset before new fetch
+        setRows([]);
 
-        const res = await fetch(`http://localhost:8080/gdms/sip-report?orgId=${orgId}`, {
-          signal: controller.signal,
-        });
+        const res = await fetch(
+          `http://localhost:8080/gdms/sip-report?orgId=${orgId}`,
+          { signal: controller.signal }
+        );
         if (!res.ok) throw new Error(`Failed (${res.status})`);
 
-        // ✅ STREAMING FETCH
         const reader = res.body.getReader();
         const decoder = new TextDecoder();
         let buffer = "";
@@ -31,18 +47,18 @@ export default function SIPReport({ orgId }) {
 
           buffer += decoder.decode(value, { stream: true });
 
-          // try partial parse
           try {
             const parsed = JSON.parse(buffer);
             if (Array.isArray(parsed)) {
-              setRows(parsed); // progressively update UI
+              setRows(parsed);
             }
           } catch {
-            // not valid JSON yet, keep buffering
+            // wait for more chunks
           }
         }
       } catch (e) {
-        if (e.name !== "AbortError") setErr(e.message || "Failed to load SIP report");
+        if (e.name !== "AbortError")
+          setErr(e.message || "Failed to load SIP report");
       } finally {
         setLoading(false);
       }
@@ -51,50 +67,81 @@ export default function SIPReport({ orgId }) {
     return () => controller.abort();
   }, [orgId]);
 
-  // 🟢 Extract dynamic MAC columns
-  const macColumns = rows.length
-    ? Object.keys(rows[0]).filter((k) => k.toLowerCase().includes("mac"))
-    : [];
-
-  // 🟢 Download function
-  const handleDownload = () => {
-    if (!rows.length) return;
-
-    const header = [
-      "SIP Account Name",
-      "SIP Server",
-      "SIP User ID",
-      "Display Name",
-      "SIP Account Active Status",
-      ...macColumns, // dynamic MAC headers
+  // Detect columns dynamically
+  const allColumns = useMemo(() => {
+    if (!rows.length) return [];
+    const fixedCols = [
+      { key: "accountName", label: "SIP Account Name" },
+      { key: "sipServer", label: "SIP Server" },
+      { key: "sipUserId", label: "SIP User ID" },
+      { key: "displayName", label: "Display Name" },
+      { key: "sipAccountActiveStatus", label: "SIP Account Active Status" },
     ];
+    const macCols = Object.keys(rows[0] || {}).filter((k) =>
+      k.toLowerCase().includes("mac")
+    );
+    return [
+      ...fixedCols,
+      ...macCols.map((col) => ({ key: col, label: col })),
+    ];
+  }, [rows]);
+
+  // Default select all columns
+  useEffect(() => {
+    if (allColumns.length && !selectedCols.length) {
+      setSelectedCols(allColumns.map((c) => c.key));
+    }
+  }, [allColumns]);
+
+  // Toggle column
+  const toggleColumn = (key) => {
+    setSelectedCols((prev) =>
+      prev.includes(key) ? prev.filter((c) => c !== key) : [...prev, key]
+    );
+  };
+
+  // Filter rows by search
+  const filteredRows = useMemo(() => {
+    if (!search.trim()) return rows;
+    const text = search.toLowerCase();
+    return rows.filter((r) =>
+      Object.values(r).some((val) =>
+        String(val || "").toLowerCase().includes(text)
+      )
+    );
+  }, [rows, search]);
+
+  // Download CSV with only selected columns
+  const handleDownload = () => {
+    if (!filteredRows.length) return;
+
+    const header = allColumns
+      .filter((c) => selectedCols.includes(c.key))
+      .map((c) => c.label);
 
     const csvRows = [header.join(",")];
-    rows.forEach((r) => {
-      csvRows.push([
-        r.accountName || "—",
-        r.sipServer || "—",
-        r.sipUserId || "—",
-        r.displayName || "—",
-        r.sipAccountActiveStatus || "—",
-        ...macColumns.map((col) => r[col] || "—"),
-      ].join(","));
+    filteredRows.forEach((r) => {
+      csvRows.push(
+        allColumns
+          .filter((c) => selectedCols.includes(c.key))
+          .map((c) => r[c.key] || "—")
+          .join(",")
+      );
     });
 
     const csvString = csvRows.join("\n");
 
-    // Generate timestamp for filename
     const now = new Date();
-    const timestamp = `${String(now.getDate()).padStart(2, "0")}-${String(
+    const ts = `${String(now.getDate()).padStart(2, "0")}-${String(
       now.getMonth() + 1
-    ).padStart(2, "0")}-${now.getFullYear()} ${String(now.getHours()).padStart(
+    ).padStart(2, "0")}-${now.getFullYear()} ${String(
+      now.getHours()
+    ).padStart(2, "0")}.${String(now.getMinutes()).padStart(
       2,
       "0"
-    )}.${String(now.getMinutes()).padStart(2, "0")}.${String(
-      now.getSeconds()
-    ).padStart(2, "0")}`;
+    )}.${String(now.getSeconds()).padStart(2, "0")}`;
 
-    const filename = `[GDMS] SIP account list ${timestamp}.csv`;
+    const filename = `[GDMS] SIP account list ${ts}.csv`;
 
     const blob = new Blob([csvString], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
@@ -108,46 +155,89 @@ export default function SIPReport({ orgId }) {
   if (!orgId) return null;
   if (loading && !rows.length) return <div>Loading SIP Report…</div>;
   if (err) return <div style={{ color: "crimson" }}>{err}</div>;
-  if (!rows.length) return <div>No SIP accounts found for this organization.</div>;
+  if (!rows.length)
+    return <div>No SIP accounts found for this organization.</div>;
 
   return (
-    <div className="table-wrap">
-      {/* 🟢 Download Button */}
-      <div style={{ marginBottom: "10px" }}>
+    <div className="report-container">
+      {/* Toolbar */}
+      <div className="report-actions" style={{ gap: "10px", display: "flex" }}>
+        {/* 🔍 Search */}
+        <input
+          type="text"
+          placeholder="🔍 Search..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{ padding: "6px 10px", border: "1px solid #ccc", borderRadius: "6px" }}
+        />
+
+        {/* Column selector */}
+        <div className="dropdown" ref={dropdownRef} style={{ position: "relative" }}>
+          <button className="btn secondary" onClick={() => setShowDropdown(!showDropdown)}>
+            Select Columns ▾
+          </button>
+          {showDropdown && (
+            <div className="column-dropdown">
+              <div style={{ marginBottom: 6 }}>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={selectedCols.length === allColumns.length}
+                    onChange={(e) =>
+                      setSelectedCols(
+                        e.target.checked ? allColumns.map((c) => c.key) : []
+                      )
+                    }
+                  />{" "}
+                  Select All
+                </label>
+              </div>
+              {allColumns.map((col) => (
+                <label key={col.key} className="dropdown-item">
+                  <input
+                    type="checkbox"
+                    checked={selectedCols.includes(col.key)}
+                    onChange={() => toggleColumn(col.key)}
+                  />{" "}
+                  {col.label}
+                </label>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Download */}
         <button className="btn" onClick={handleDownload}>
           ⬇️ Download SIP Report
         </button>
       </div>
 
-      <div className="hscroll-strip">
-        <table className="cdr-table">
-          <thead>
-            <tr>
-              <th>SIP Account Name</th>
-              <th>SIP Server</th>
-              <th>SIP User ID</th>
-              <th>Display Name</th>
-              <th>SIP Account Active Status</th>
-              {macColumns.map((col) => (
-                <th key={col}>{col}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((r, i) => (
-              <tr key={i}>
-                <td>{r.accountName || "—"}</td>
-                <td>{r.sipServer || "—"}</td>
-                <td>{r.sipUserId || "—"}</td>
-                <td>{r.displayName || "—"}</td>
-                <td>{r.sipAccountActiveStatus || "—"}</td>
-                {macColumns.map((col) => (
-                  <td key={col}>{r[col] || "—"}</td>
-                ))}
+      {/* Table */}
+      <div className="table-wrap">
+        <div className="hscroll-strip">
+          <table className="cdr-table">
+            <thead>
+              <tr>
+                {allColumns
+                  .filter((c) => selectedCols.includes(c.key))
+                  .map((c) => (
+                    <th key={c.key}>{c.label}</th>
+                  ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filteredRows.map((r, i) => (
+                <tr key={i}>
+                  {allColumns
+                    .filter((c) => selectedCols.includes(c.key))
+                    .map((c) => (
+                      <td key={c.key}>{r[c.key] || "—"}</td>
+                    ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

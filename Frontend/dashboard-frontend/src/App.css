@@ -1,14 +1,12 @@
-/* ===== LAYOUT CONTAINERS ===== */
+/* ===== ROOT & APP ===== */
 :root {
-  --toolbar-h: 56px; /* height of your toolbar row */
+  --toolbar-h: 56px; /* height of navbar */
 }
 
 .app {
-  display: flex;
-  flex-direction: column; /* stack navbar + content */
+  flex-direction: column;
   height: 100vh;
   width: 100%;
-  font-family: Arial, sans-serif;
   background: #f5f5f5;
 }
 
@@ -58,28 +56,30 @@
   flex: 1;
   width: 100%;
   padding: 20px;
-  overflow-y: auto;
-  display: flex;
-  justify-content: center;
+  background: #f5f5f5;
+  height: calc(100vh - 60px); /* navbar height adjustment */
+  overflow: hidden;          /* 🚫 no scroll here */
 }
 
+/* Centered layout (Welcome screen, Login) */
 .content.center-mode {
+  display: flex;
   align-items: center;
+  justify-content: center;
+}
+.content.table-mode {
+  display: block;
+}
+.content.table-mode .table-wrap {
+  max-height: 100%;
+  overflow-y: auto;
+  overflow-x: auto;
+   width: 100%;
+  display: block;
 }
 
 .content.table-mode {
   align-items: flex-start;
-}
-
-/* shared container inside content */
-.center-box {
-  flex: 1;
-  max-width: 1280px;
-  width: 100%;
-  background: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 /* ===== PAGE TITLES ===== */
@@ -96,170 +96,10 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  flex: 1; /* take remaining full height */
+  flex: 1;
   text-align: center;
 }
 
-.welcome-screen .page-title {
-  font-size: 2.8rem;
-  font-weight: bold;
-  color: #1e293b;
-  margin: 0;
-}
-
-/* ===== LOGIN CARD ===== */
-.cdr-box {
-  background: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2);
-  width: 320px;
-  margin: 0 auto;
-}
-
-.cdr-box h2 {
-  margin-bottom: 16px;
-  font-size: 1.3rem;
-  color: #1e293b;
-}
-
-.cdr-box input {
-  width: 100%;
-  padding: 10px;
-  margin: 8px 0;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-}
-
-.cdr-box button {
-  width: 100%;
-  padding: 10px;
-  background: #007bff;
-  border: none;
-  color: white;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-.cdr-box button:hover {
-  background: #0056b3;
-}
-
-/* ===== TABLE TOOLBAR ===== */
-.cdr-header {
-  display: flex;
-  align-items: center;
-  justify-content: center; /* center both together */
-  gap: 8px;
-  margin-bottom: 12px;
-}
-
-.cdr-actions .btn {
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  cursor: pointer;
-  background: #fff;
-}
-
-.cdr-actions .btn:hover {
-  background: #f7f7f7;
-}
-
-.btn {
-  padding: 8px 14px;
-  border: 1px solid #007bff;
-  border-radius: 6px;
-  background: #007bff;
-  color: #fff;
-  cursor: pointer;
-  margin-right: 8px;
-  transition: background 0.2s ease;
-}
-
-.btn:hover {
-  background: #0056b3;
-}
-.cdr-icon {
-  font-size: 1.6rem;
-}
-
-/* ===== TABLE AREA ===== */
-.table-wrap {
-  position: relative;
-  overflow-x: auto;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background: #fff;
-  padding: 10px;
-  max-height: calc(100vh - 220px);
-}
-
-.cdr-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 14px;
-  min-width: 1200px;
-}
-
-.cdr-table thead th {
-  background: #f8f9fa;
-  font-weight: 600;
-  padding: 10px;
-  border-bottom: 2px solid #e0e0e0;
-  text-align: left;
-  white-space: nowrap;
-  position: sticky;
-  top: 0;
-  z-index: 1;
-}
-
-.cdr-table tbody td {
-  padding: 10px;
-  border-bottom: 1px solid #f0f0f0;
-  vertical-align: middle;
-  white-space: nowrap;
-}
-
-.cdr-table tbody tr:nth-child(odd) {
-  background: #fafafa;
-}
-
-.cdr-table tbody tr:hover {
-  background: #f1f7ff;
-}
-
-/* ===== SMALL SCREENS ===== */
-@media (max-width: 900px) {
-  .nav-buttons {
-    flex-direction: column;
-    gap: 8px;
-  }
-  .table-wrap {
-    height: calc(100vh - 190px);
-  }
-}
-
-/* ===== GDMS Section ===== */
-.gdms-section {
-  padding: 20px;
-  background-color: #f4f4f4;
-  border-radius: 5px;
-  margin-top: 20px;
-}
-
-/* ===== REPORT BUTTON BAR ===== */
-.report-actions {
-  display: flex;
-  justify-content: flex-start;
-  margin-bottom: 12px;
-  position: sticky;
-  top: 0;
-  background: #f5f5f5;
-  padding: 10px 0;
-  z-index: 10;
-}
 /* ===== CDR SIGN IN ===== */
 .cdr-login-card {
   background: #fff;
@@ -276,6 +116,7 @@
   font-weight: bold;
   color: #1a1a1a;
 }
+
 .cdr-title {
   font-size: 1.2rem;
   font-weight: bold;
@@ -325,4 +166,325 @@
   color: crimson;
   font-size: 0.9rem;
   text-align: left;
+}
+
+/* ===== TABLE AREA ===== */
+.table-wrap {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fff;
+  height: 70vh;             /* lock container height */
+  width: 100%;              /* take full width */
+  overflow: auto;           /* enables BOTH scrollbars */
+  margin-top: 12px;
+}
+.cdr-table {
+  border-collapse: collapse;
+  font-size: 14px;
+  min-width: 100%;       /* ✅ fits container width */
+  width: max-content;    /* ✅ grows horizontally if many columns */
+  max-height: 100%;      /* ✅ prevents it from overflowing parent */
+}
+/* ===== CDR HEADER TOOLBAR ===== */
+
+.cdr-header {
+  background: #fff;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e5e7eb;
+  border-radius: 6px 6px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+
+  position: sticky;
+  top: 0;          /* ✅ sticks to top of scrollable container */
+  z-index: 30;     /* higher than table header */
+}
+
+.cdr-table thead th {
+  background: #f8f9fa;
+  font-weight: 600;
+  padding: 10px;
+  border-bottom: 2px solid #e0e0e0;
+  text-align: left;
+  white-space: nowrap;
+
+  position: sticky;
+  top: 52px;       /* ✅ equal to toolbar height */
+  z-index: 20;     /* slightly below toolbar */
+}
+
+.cdr-table tbody td {
+  padding: 10px;
+  border-bottom: 1px solid #f0f0f0;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.cdr-table tbody tr:nth-child(odd) {
+  background: #fafafa;
+}
+
+.cdr-table tbody tr:hover {
+  background: #f1f7ff;
+}
+
+
+/* ===== SMALL SCREENS ===== */
+@media (max-width: 900px) {
+  .nav-buttons {
+    flex-direction: column;
+    gap: 8px;
+  }
+ .table-wrap {
+  overflow-y: auto;       /* scroll vertically */
+  overflow-x: auto;       /* scroll horizontally if needed */
+  max-height: calc(100vh - 250px); /* keeps table inside screen */
+}
+}
+/* ===== REPORT CONTAINER ===== */
+.report-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  padding: 0;
+  max-width: 100%;
+  height: 100%;       /* take full height inside .content */
+}
+.report-actions {
+  position: sticky;
+  top: 0;
+  background: #fff;
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  z-index: 50;   /* 🔥 higher than table headers */
+  display: flex;
+  justify-content: flex-start;
+}
+.report-actions .btn {
+  padding: 8px 14px;
+  border: 1px solid #007bff;
+  border-radius: 6px;
+  background: #007bff;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s ease;
+}
+
+.report-actions .btn:hover {
+  background: #0056b3;
+}
+.gdms-section {
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  margin-top: 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}.gdms-card {
+  background: #ffffff;
+  padding: 25px 30px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 12px rgba(0,0,0,0.08);
+  max-width: 600px;
+  width: 100%;
+  text-align: center;
+}
+
+.gdms-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 10px;
+}
+
+.gdms-subtext {
+  font-size: 1rem;
+  color: #555;
+  margin-bottom: 20px;
+}
+
+.gdms-dropdown {
+  display: flex;
+  justify-content: center;
+}
+
+.gdms-dropdown select {
+  padding: 10px 14px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.gdms-dropdown select:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 3px rgba(0,123,255,0.4);
+}
+.gdms-section .table-wrap {
+  max-height: 70vh;   /* keeps report inside viewport */
+  overflow-y: auto;
+}
+/* ===== CDR HEADER TOOLBAR ===== */
+.cdr-header {
+  background: #fff;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e5e7eb;
+  border-radius: 6px 6px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.cdr-header label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.cdr-header input[type="date"] {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+/* ===== CDR BUTTONS ===== */
+.btn {
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.btn:hover {
+  background: #1d4ed8;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Secondary style (e.g., column dropdown trigger) */
+.btn.secondary {
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.btn.secondary:hover {
+  background: #e5e7eb;
+}
+
+/* ===== COLUMN SELECTOR DROPDOWN ===== */
+.column-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  z-index: 1000;
+  width: 220px;
+  box-shadow: 0px 4px 12px rgba(0,0,0,0.08);
+}
+
+.column-dropdown label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 0;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.column-dropdown input[type="checkbox"] {
+  accent-color: #2563eb;
+}
+
+/* ===== PAGINATION ===== */
+.pagination {
+  position: sticky;
+  bottom: 0;              /* ✅ sticks to bottom of scroll area */
+  background: #fff;
+  border-top: 1px solid #e5e7eb;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  justify-content: center;
+  z-index: 25;            /* higher than rows, below toolbar */
+}
+/* Dropdown container */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+/* Button styling */
+.dropdown-btn {
+  background: #007bff;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.dropdown-btn:hover {
+  background: #0056b3;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 10px;
+  min-width: 200px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  max-height: 250px;
+  overflow-y: auto;
+
+  z-index: 1000;  /* 🔥 above both table header + toolbar */
+}
+
+/* Each checkbox row */
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  padding: 4px 0;
+  cursor: pointer;
+}
+
+.dropdown-item input {
+  cursor: pointer;
 }
